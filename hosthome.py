@@ -24,12 +24,7 @@ dictConfig({
     }
 })
 
-app = Flask(
-    __name__,
-    static_url_path='',
-    static_folder='dist',
-    template_folder='dist'
-)
+app = Flask(__name__, static_url_path='', static_folder='dist', template_folder='dist')
 
 
 # class MongoClient:
@@ -60,28 +55,27 @@ def index(path):
 
 
 @app.route('/api/host', methods=['GET'])
-def get_all_hosts():
-    hosts = request.get_json()
+def get_hosts():
+    hosts = get_all_hosts()
     return { "hosts": hosts, "status": hosts.status_code }
 
 @app.route('/api/host/{id}', methods=['GET'])
-def get_host_by_id(id: int):
+def get_host_by_id_fn(id: int):
     hosts = request.get_json()
     host_id = hosts[str(id)]
-    host_output = host[host_id]
+    host_output = get_host_by_id(host_id=host_id)
     return { "host": host_output, "status": hosts.status_code }
 
 
 @app.route('/api/host', methods=['POST'])
-def add_host():
+def add_host_fn():
     hosts = request.get_json()
     host.update(hosts)
-    return { "hosts": hosts, }
+    return { "hosts": hosts }
     
 
-
 @app.route('/api/host/{id}', methods=['PUT'])
-def update_host(id: int):
+def update_host_fn(id: int):
     hosts = request.get_json()
     try:
         host[str(id)] = hosts
@@ -91,7 +85,7 @@ def update_host(id: int):
 
 
 @app.route('/api/host/{id}', methods=['DELETE'])
-def delete_host(id: int):
+def delete_host_fn(id: int):
     hosts  = request.get_json()
     host_id = hosts[str(id)]
     del host[host_id]
@@ -99,16 +93,16 @@ def delete_host(id: int):
         success = "deleted!"
     else:
         success = "no"
-    return { "success": success "status": hosts.status_code }
+    return { "success": success, "status": hosts.status_code }
 
 ####guest routes
 @app.route('/api/guest', methods=['GET'])
-def get_all_guests():
+def get_guests():
     guests = request.get_json()
     return { "guests": guests, "status": guests.status_code }
 
 @app.route('/api/guest/{id}', methods=['GET'])
-def get_host_by_id(id: int):
+def get_host_by_id_fn(id: int):
     guests = request.get_json()
     guest_id = guests[str(id)]
     guest_output = guest[guest_id]
@@ -116,13 +110,13 @@ def get_host_by_id(id: int):
 
 
 @app.route('/api/guest', methods=['POST'])
-def add_host():
+def add_host_fn():
     guests = request.get_json()
     guest.update(guests)
-    return { "guests": guests, }
+    return { "guests": guests }
 
 @app.route('/api/guest/{id}', methods=['PUT'])
-def update_host(id: int):
+def update_host_fn(id: int):
     guests = request.get_json()
     try:
         guest[str(id)] = guests
@@ -132,7 +126,7 @@ def update_host(id: int):
 
 
 @app.route('/api/guest/{id}', methods=['DELETE'])
-def delete_host(id: int):
+def delete_host_fn(id: int):
     guests  = request.get_json()
     guest_id = guests[str(id)]
     del guest[guest_id]
@@ -140,9 +134,7 @@ def delete_host(id: int):
         success = "deleted!"
     else:
         success = "no"
-    return { "success": success "status": guests.status_code }
-
-
+    return { "success": success, "status": guests.status_code }
 
 
 if __name__ == "__main__":    
@@ -151,3 +143,5 @@ if __name__ == "__main__":
     app.logger.setLevel(logging.INFO)
     app.logger.warn('starting app...')
     app.run(host="0.0.0.0", port=8765, debug=True)
+
+
